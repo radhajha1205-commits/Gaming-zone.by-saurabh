@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaming Zone</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: white;
+  background: linear-gradient(135deg, #ff4ecd, #7048e8, #00b4d8);
+}
+header { padding: 25px; background: #241044; }
+h1 { color: #ffe45e; font-size: 36px; }
+.card {
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 600px;
+  width: 82%;
+  border-radius: 20px;
+  background: #241044cc;
+}
+button {
+  padding: 12px 18px;
+  margin: 5px;
+  border: 0;
+  border-radius: 12px;
+  background: #ffe45e;
+  color: #241044;
+  font-weight: bold;
+  cursor: pointer;
+}
+a { color: #8fffea; }
+input { padding: 10px; border-radius: 8px; width: 65%; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎮 GAMING ZONE</h1>
+  <p>Play • Challenge • Have Fun!</p>
+</header>
+
+<section class="card">
+  <h2>🚀 Welcome to Gaming Zone</h2>
+  <p>Play games, beat scores and have fun!</p>
+  <a href="#games">Start Playing ↓</a>
+</section>
+
+<section class="card" id="games">
+  <h2>🎯 Number Challenge</h2>
+  <p>Guess a number from 1 to 5.</p>
+  <p id="result">Choose a number!</p>
+  <p>Score: <span id="score">0</span></p>
+  <button onclick="guess(1)">1</button>
+  <button onclick="guess(2)">2</button>
+  <button onclick="guess(3)">3</button>
+  <button onclick="guess(4)">4</button>
+  <button onclick="guess(5)">5</button>
+</section>
+
+<section class="card">
+  <h2>✊ Rock Paper Scissors</h2>
+  <button onclick="play('Rock')">✊ Rock</button>
+  <button onclick="play('Paper')">✋ Paper</button>
+  <button onclick="play('Scissors')">✌️ Scissors</button>
+  <p id="rps">Your turn!</p>
+</section>
+
+<section class="card">
+  <h2>🧱 Roblox Zone</h2>
+  <p>Ready for your next adventure?</p>
+  <a href="https://www.roblox.com/" target="_blank"
+     rel="noopener noreferrer">
+    <button>Explore Roblox</button>
+  </a>
+</section>
+
+<section class="card">
+  <h2>🏆 Leaderboard</h2>
+  <input id="name" maxlength="16" placeholder="Your nickname">
+  <button onclick="saveScore()">Save Score</button>
+  <ol id="board"></ol>
+  <p><small>Scores are saved on this device only.</small></p>
+</section>
+
+<footer><p>Made with ❤️ by Gaming Zone</p></footer>
+
+<script>
+let score = 0;
+let secret = Math.floor(Math.random() * 5) + 1;
+
+function guess(n) {
+  if (n === secret) {
+    score += 10;
+    document.getElementById('result').textContent =
+      '🎉 Correct! +10 points. Try again!';
+    secret = Math.floor(Math.random() * 5) + 1;
+  } else {
+    document.getElementById('result').textContent =
+      'Not quite! Try again 😄';
+  }
+  document.getElementById('score').textContent = score;
+}
+
+function play(move) {
+  const moves = ['Rock', 'Paper', 'Scissors'];
+  const computer = moves[Math.floor(Math.random() * 3)];
+  let message = 'Tie!';
+  if (move !== computer) {
+    if ((move === 'Rock' && computer === 'Scissors') ||
+        (move === 'Paper' && computer === 'Rock') ||
+        (move === 'Scissors' && computer === 'Paper')) {
+      message = 'You win! 🎉';
+      score += 5;
+    } else {
+      message = 'Computer wins!';
+    }
+  }
+  document.getElementById('rps').textContent =
+    'You: ' + move + ' | Computer: ' + computer + '. ' + message;
+  document.getElementById('score').textContent = score;
+}
+
+function getScores() {
+  try { return JSON.parse(localStorage.getItem('gzScores') || '[]'); }
+  catch (e) { return []; }
+}
+
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  getScores().sort((a,b) => b.score-a.score).slice(0,10)
+    .forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item.name + ' — ' + item.score + ' points';
+      board.appendChild(li);
+    });
+}
+
+function saveScore() {
+  const name = document.getElementById('name').value.trim();
+  if (!name) { alert('Enter a nickname first!'); return; }
+  try {
+    const scores = getScores();
+    scores.push({name: name, score: score});
+    localStorage.setItem('gzScores', JSON.stringify(scores));
+    render();
+    alert('Score saved!');
+  } catch (e) {
+    alert('Unable to save scores in this browser.');
+  }
+}
+render();
+</script>
+</body>
+</html>
